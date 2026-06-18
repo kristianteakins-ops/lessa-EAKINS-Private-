@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lessa-Eakins Family Office</title>
+<style>
+:root{
+  --bg:#0a0a0a;--surface:#111111;--surface2:#1a1a1a;--surface3:#222222;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+  --gold:#C9A96E;--gold2:#E8C88A;--gold-dim:rgba(201,169,110,0.12);
+  --text:#F0EDE8;--muted:#888480;--faint:#2a2a2a;
+  --red:#E05C4A;--green:#5A9E6F;--blue:#4A86C8;--purple:#9B72CF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Georgia',serif;min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh}.screen.active{display:flex}
+
+/* GATE */
+#screen-gate{align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 20%,rgba(201,169,110,0.06) 0%,transparent 60%),var(--bg)}
+.gate-box{text-align:center;width:340px}
+.gate-crest{font-size:52px;margin-bottom:20px;filter:drop-shadow(0 0 24px rgba(201,169,110,0.35))}
+.gate-title{font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.gate-name{font-size:30px;color:var(--text);margin-bottom:4px;font-style:italic}
+.gate-sub{font-size:11px;color:var(--muted);margin-bottom:36px;letter-spacing:0.12em}
+.gate-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Georgia',serif;font-size:15px;padding:14px 16px;outline:none;margin-bottom:12px;text-align:center;letter-spacing:0.25em}
+.gate-input:focus{border-color:var(--gold)}.gate-input::placeholder{color:var(--muted);letter-spacing:0.1em}
+.gate-btn{width:100%;background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;font-family:'Georgia',serif;font-size:14px;font-weight:600;padding:14px;cursor:pointer;letter-spacing:0.1em;transition:all 0.2s}
+.gate-btn:hover{background:var(--gold2)}.gate-error{color:var(--red);font-size:12px;margin-top:8px;min-height:18px}
+
+/* AUTH */
+#screen-auth{align-items:center;justify-content:center;background:radial-gradient(ellipse at 70% 80%,rgba(201,169,110,0.05) 0%,transparent 60%),var(--bg)}
+.auth-box{width:380px}.auth-header{text-align:center;margin-bottom:28px}
+.auth-logo{font-size:32px;margin-bottom:10px}.auth-title{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.auth-sub{font-size:22px;color:var(--text);font-style:italic}
+.auth-tabs{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.auth-tab{flex:1;padding:10px;text-align:center;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--muted);font-family:'Georgia',serif;transition:all 0.2s}
+.auth-tab.active{background:var(--gold-dim);color:var(--gold)}
+.auth-form{display:flex;flex-direction:column;gap:12px}
+.auth-label{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.auth-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Georgia',serif;font-size:14px;padding:12px 14px;outline:none;transition:border-color 0.2s}
+.auth-input:focus{border-color:var(--gold)}.auth-input::placeholder{color:var(--muted)}
+.auth-btn{background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;font-family:'Georgia',serif;font-size:13px;font-weight:600;padding:13px;cursor:pointer;letter-spacing:0.1em;margin-top:4px;transition:all 0.2s}
+.auth-btn:hover{background:var(--gold2)}.auth-msg{font-size:12px;text-align:center;min-height:18px;margin-top:4px}
+.auth-msg.error{color:var(--red)}.auth-msg.success{color:var(--green)}
+
+/* APP SHELL */
+#screen-app{flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:12px}.topbar-crest{font-size:20px}
+.topbar-title{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold)}
+.topbar-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.user-pill{background:var(--gold-dim);border:1px solid rgba(201,169,110,0.2);border-radius:99px;padding:4px 12px;font-size:11px;color:var(--gold);letter-spacing:0.06em}
+.signout-btn{background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--muted);font-size:11px;padding:4px 10px;cursor:pointer;font-family:'Georgia',serif;transition:all 0.2s}
+.signout-btn:hover{color:var(--text)}
+
+/* TABS */
+.tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.tab-nav::-webkit-scrollbar{height:2px}.tab-nav::-webkit-scrollbar-thumb{background:var(--faint)}
+.tab-btn{padding:12px 16px;border:none;background:transparent;color:var(--muted);font-family:'Georgia',serif;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;display:flex;align-items:center;gap:6px}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}.tab-btn:hover:not(.active){color:var(--text)}
+.tab-icon{font-size:13px}
+
+/* CONTENT */
+.tab-content{display:none;padding:22px;max-width:1400px;margin:0 auto;width:100%}
+.tab-content.active{display:block}
+
+/* SUMMARY CARDS */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px;margin-bottom:22px}
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.sum-label{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.sum-val{font-size:21px;color:var(--gold);font-style:italic}.sum-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.sum-card.highlight{background:linear-gradient(135deg,rgba(201,169,110,0.08),rgba(201,169,110,0.02));border-color:rgba(201,169,110,0.25)}
+.sum-card.green-card{background:rgba(90,158,111,0.06);border-color:rgba(90,158,111,0.2)}
+.sum-card.blue-card{background:rgba(74,134,200,0.06);border-color:rgba(74,134,200,0.2)}
+.sum-card.purple-card{background:rgba(155,114,207,0.06);border-color:rgba(155,114,207,0.2)}
+
+/* SECTION */
+.section{margin-bottom:26px}.section-head{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.section-icon{font-size:15px}.section-title{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold)}
+.section-count{font-size:11px;color:var(--muted);background:var(--surface2);border-radius:99px;padding:2px 8px}
+
+/* ASSET CARDS */
+.asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:11px}
+.asset-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px;transition:border-color 0.2s;cursor:pointer;position:relative}
+.asset-card:hover{border-color:var(--border2)}
+.asset-card.locked::after{content:"🔒";position:absolute;top:10px;right:10px;font-size:11px;opacity:0.5}
+.asset-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.asset-name{font-size:14px;color:var(--text);font-style:italic}.asset-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.asset-badge{font-size:10px;padding:3px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0;margin-left:8px}
+.badge-profit{background:rgba(90,158,111,0.15);color:var(--green);border:1px solid rgba(90,158,111,0.25)}
+.badge-loss{background:rgba(224,92,74,0.12);color:var(--red);border:1px solid rgba(224,92,74,0.2)}
+.badge-neutral{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.badge-leased{background:rgba(74,134,200,0.12);color:var(--blue);border:1px solid rgba(74,134,200,0.2)}
+.badge-locked{background:rgba(201,169,110,0.12);color:var(--gold);border:1px solid rgba(201,169,110,0.2)}
+.asset-divider{height:1px;background:var(--border);margin:9px 0}
+.asset-row{display:flex;justify-content:space-between;margin-bottom:5px}.asset-row:last-child{margin-bottom:0}
+.asset-key{font-size:11px;color:var(--muted)}.asset-val{font-size:11px;color:var(--text);text-align:right;max-width:60%}
+.asset-val.gold{color:var(--gold)}.asset-val.green{color:var(--green)}.asset-val.red{color:var(--red)}.asset-val.blue{color:var(--blue)}
+.asset-note{font-size:10px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);line-height:1.5;font-style:italic}
+
+/* LOCK TOGGLE */
+.lock-btn{background:transparent;border:1px solid var(--border2);border-radius:5px;color:var(--muted);font-size:10px;padding:3px 8px;cursor:pointer;font-family:'Georgia',serif;margin-top:8px;width:100%;transition:all 0.2s}
+.lock-btn:hover{color:var(--gold);border-color:rgba(201,169,110,0.3)}
+.lock-btn.active{color:var(--gold);border-color:rgba(201,169,110,0.3);background:var(--gold-dim)}
+
+/* REFRESH BUTTON */
+.refresh-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.refresh-btn{background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;font-family:'Georgia',serif;font-size:12px;font-weight:600;padding:9px 18px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px}
+.refresh-btn:hover{background:var(--gold2)}.refresh-btn:disabled{opacity:0.4;cursor:not-allowed}
+.refresh-btn.loading{background:var(--surface2);color:var(--muted);border:1px solid var(--border2)}
+.api-key-btn{background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:'Georgia',serif;font-size:12px;padding:9px 14px;cursor:pointer;transition:all 0.2s}
+.api-key-btn:hover{color:var(--text);border-color:var(--border2)}
+.refresh-status{font-size:11px;color:var(--muted);font-style:italic}
+
+/* CONFIDENCE BADGE */
+.conf-high{color:var(--green);font-size:9px}.conf-med{color:var(--gold);font-size:9px}.conf-est{color:var(--muted);font-size:9px}
+
+/* UPDATE BAR */
+.update-bar{background:var(--gold-dim);border:1px solid rgba(201,169,110,0.15);border-radius:8px;padding:9px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.update-text{font-size:11px;color:var(--gold)}.update-date{font-size:11px;color:var(--muted)}
+
+/* INVESTMENT DASHBOARD */
+.inv-hero{background:linear-gradient(135deg,rgba(201,169,110,0.08),rgba(201,169,110,0.02));border:1px solid rgba(201,169,110,0.2);border-radius:14px;padding:22px;margin-bottom:18px}
+.inv-hero-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:18px}
+.inv-hero-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.inv-hero-val{font-size:34px;color:var(--text);font-style:italic}.inv-hero-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.inv-return{font-size:14px;font-weight:bold}.inv-return.positive{color:var(--green)}.inv-return.negative{color:var(--red)}
+.inv-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px}
+.inv-metric{background:var(--surface2);border-radius:10px;padding:13px}
+.inv-metric-label{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.inv-metric-val{font-size:17px;color:var(--text)}.inv-metric-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.benchmark-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.benchmark-title{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:13px}
+.benchmark-row{margin-bottom:13px}.benchmark-row:last-child{margin-bottom:0}
+.benchmark-labels{display:flex;justify-content:space-between;margin-bottom:5px}
+.benchmark-name{font-size:12px;color:var(--text)}.benchmark-pct{font-size:12px;font-style:italic}
+.benchmark-bar-bg{height:5px;background:var(--faint);border-radius:99px;overflow:hidden}
+.benchmark-bar-fill{height:100%;border-radius:99px;transition:width 0.8s ease}
+.alloc-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.alloc-title{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:13px}
+.alloc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.alloc-item{display:flex;align-items:center;gap:8px}
+.alloc-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.alloc-label{font-size:12px;color:var(--muted)}.alloc-pct{font-size:12px;color:var(--text);margin-left:auto}
+.account-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:11px}
+.account-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:8px}
+.account-name{font-size:15px;color:var(--text);font-style:italic}.account-id{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:0.1em}
+.account-val{font-size:19px;color:var(--gold);font-style:italic;text-align:right}
+.account-rows{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.account-row-item{background:var(--surface2);border-radius:8px;padding:10px}
+.account-row-label{font-size:10px;color:var(--muted);margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase}
+.account-row-val{font-size:13px;color:var(--text)}.account-row-val.green{color:var(--green)}.account-row-val.gold{color:var(--gold)}
+.model-row{margin-top:11px;padding-top:11px;border-top:1px solid var(--border)}
+.model-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.model-items{display:flex;flex-wrap:wrap;gap:6px}
+.model-chip{font-size:10px;padding:3px 10px;border-radius:99px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,169,110,0.2)}
+
+/* API MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px);display:none}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;max-width:400px;width:90%}
+.modal-title{font-size:16px;color:var(--text);font-style:italic;margin-bottom:8px}
+.modal-sub{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+.modal-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:11px 13px;outline:none;margin-bottom:12px}
+.modal-input:focus{border-color:var(--gold)}
+.modal-btns{display:flex;gap:8px}
+.modal-save{flex:1;background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;font-family:'Georgia',serif;font-size:13px;font-weight:600;padding:11px;cursor:pointer}
+.modal-cancel{background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:'Georgia',serif;font-size:13px;padding:11px 16px;cursor:pointer}
+
+/* LOADER */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;transition:opacity 0.4s}
+.loading-overlay.hidden{opacity:0;pointer-events:none}
+.loader-spin{width:28px;height:28px;border:2px solid var(--faint);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:11px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;text-align:center}
+
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--faint);border-radius:99px}
+
+@media(max-width:600px){
+  .tab-content{padding:13px}.summary-grid{grid-template-columns:1fr 1fr}
+  .asset-grid{grid-template-columns:1fr}.topbar{padding:10px 13px}
+  .inv-hero-val{font-size:26px}.account-rows{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loader"><div><div class="loader-spin"></div><div class="loader-text">Initializing</div></div></div>
+
+<!-- API KEY MODAL -->
+<div class="modal-overlay" id="api-modal">
+  <div class="modal-box">
+    <div class="modal-title">Anthropic API Key</div>
+    <div class="modal-sub">Enter your Anthropic API key to enable live market value research. Your key is stored only in this browser — never sent anywhere else. Get a free key at console.anthropic.com.</div>
+    <input class="modal-input" id="api-key-input" type="password" placeholder="sk-ant-...">
+    <div class="modal-btns">
+      <button class="modal-save" onclick="saveApiKey()">Save Key</button>
+      <button class="modal-cancel" onclick="closeApiModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- GATE -->
+<div class="screen" id="screen-gate">
+  <div class="gate-box">
+    <div class="gate-crest">⚜️</div>
+    <div class="gate-title">Private Access</div>
+    <div class="gate-name">Lessa-Eakins</div>
+    <div class="gate-sub">Family Office · Fort Lauderdale, FL</div>
+    <input class="gate-input" id="gate-input" type="password" placeholder="Enter access code" autocomplete="off">
+    <button class="gate-btn" onclick="checkGate()">Enter</button>
+    <div class="gate-error" id="gate-error"></div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="screen" id="screen-auth">
+  <div class="auth-box">
+    <div class="auth-header">
+      <div class="auth-logo">⚜️</div>
+      <div class="auth-title">Family Office</div>
+      <div class="auth-sub">Lessa-Eakins</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+    </div>
+    <div class="auth-form" id="auth-form-login">
+      <div><div class="auth-label">Email</div><input class="auth-input" id="login-email" type="email" placeholder="your@email.com"></div>
+      <div><div class="auth-label">Password</div><input class="auth-input" id="login-pass" type="password" placeholder="••••••••"></div>
+      <button class="auth-btn" onclick="doLogin()">Sign In</button>
+      <div class="auth-msg" id="login-msg"></div>
+    </div>
+    <div class="auth-form" id="auth-form-register" style="display:none">
+      <div><div class="auth-label">Full Name</div><input class="auth-input" id="reg-name" type="text" placeholder="Your name"></div>
+      <div><div class="auth-label">Email</div><input class="auth-input" id="reg-email" type="email" placeholder="your@email.com"></div>
+      <div><div class="auth-label">Password</div><input class="auth-input" id="reg-pass" type="password" placeholder="Min 8 characters"></div>
+      <div><div class="auth-label">Confirm Password</div><input class="auth-input" id="reg-pass2" type="password" placeholder="Repeat password"></div>
+      <button class="auth-btn" onclick="doRegister()">Create Account</button>
+      <div class="auth-msg" id="reg-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="screen" id="screen-app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-crest">⚜️</div>
+      <div>
+        <div class="topbar-title">Lessa-Eakins Family Office</div>
+        <div class="topbar-sub" id="topbar-date">Fort Lauderdale, FL</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-pill" id="user-pill">—</div>
+      <button class="signout-btn" onclick="doSignOut()">Sign Out</button>
+    </div>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('total')" id="tabbtn-total"><span class="tab-icon">📊</span>Total</button>
+    <button class="tab-btn" onclick="switchTab('realestate')" id="tabbtn-realestate"><span class="tab-icon">🏠</span>Real Estate</button>
+    <button class="tab-btn" onclick="switchTab('vehicles')" id="tabbtn-vehicles"><span class="tab-icon">🚗</span>Vehicles</button>
+    <button class="tab-btn" onclick="switchTab('watches')" id="tabbtn-watches"><span class="tab-icon">⌚</span>Watches</button>
+    <button class="tab-btn" onclick="switchTab('jewelry')" id="tabbtn-jewelry"><span class="tab-icon">💎</span>Jewelry</button>
+    <button class="tab-btn" onclick="switchTab('art')" id="tabbtn-art"><span class="tab-icon">🎨</span>Art</button>
+    <button class="tab-btn" onclick="switchTab('investments')" id="tabbtn-investments"><span class="tab-icon">📈</span>Investments</button>
+  </div>
+
+  <div class="tab-content active" id="tab-total">
+    <div class="update-bar"><div class="update-text">⚡ Click any card to update its value · 🔒 = locked to direct offer price</div><div class="update-date" id="last-updated">—</div></div>
+    <div class="summary-grid" id="total-summary"></div>
+    <div id="total-breakdown"></div>
+  </div>
+  <div class="tab-content" id="tab-realestate">
+    <div class="update-bar"><div class="update-text">🏠 Real Estate · Fort Lauderdale, FL</div><div class="update-date" id="re-total-lbl">—</div></div>
+    <div class="refresh-bar" id="re-refresh"></div>
+    <div class="summary-grid" id="re-summary"></div>
+    <div class="asset-grid" id="re-cards"></div>
+  </div>
+  <div class="tab-content" id="tab-vehicles">
+    <div class="update-bar"><div class="update-text">🚗 Vehicles · Owned & Leased</div><div class="update-date" id="veh-total-lbl">—</div></div>
+    <div class="refresh-bar" id="veh-refresh"></div>
+    <div class="summary-grid" id="veh-summary"></div>
+    <div class="asset-grid" id="veh-cards"></div>
+  </div>
+  <div class="tab-content" id="tab-watches">
+    <div class="update-bar"><div class="update-text">⌚ Watches · 13 Timepieces</div><div class="update-date" id="watch-total-lbl">—</div></div>
+    <div class="refresh-bar" id="watch-refresh"></div>
+    <div class="summary-grid" id="watch-summary"></div>
+    <div class="asset-grid" id="watch-cards"></div>
+  </div>
+  <div class="tab-content" id="tab-jewelry">
+    <div class="update-bar"><div class="update-text">💎 Jewelry & Luxury Bags</div><div class="update-date" id="jew-total-lbl">—</div></div>
+    <div class="refresh-bar" id="jew-refresh"></div>
+    <div class="summary-grid" id="jew-summary"></div>
+    <div class="asset-grid" id="jew-cards"></div>
+  </div>
+  <div class="tab-content" id="tab-art">
+    <div class="update-bar"><div class="update-text">🎨 Art & Sculpture Collection</div><div class="update-date" id="art-total-lbl">—</div></div>
+    <div class="refresh-bar" id="art-refresh"></div>
+    <div class="summary-grid" id="art-summary"></div>
+    <div class="asset-grid" id="art-cards"></div>
+  </div>
+  <div class="tab-content" id="tab-investments">
+    <div class="update-bar"><div class="update-text">📈 Eakins Estate Portfolio · As of 6/17/26</div><div class="update-date">Updated: June 17, 2026</div></div>
+    <div id="inv-dashboard"></div>
+  </div>
+</div>
+
+<script>
+const GATE_PW="LessaEakins2025";
+const SK_USERS="fo_users_v2",SK_SESSION="fo_session_v2",SK_DATA="fo_data_v4",SK_UPDATE="fo_update_v4",SK_APIKEY="fo_apikey",SK_LOCKED="fo_locked_v4";
+
+// ── ASSET DATA ────────────────────────────────────────────────────────────────
+const DEFAULT={
+  realEstate:[
+    {id:"re1",name:"2407 Aqua Vista Blvd",subtitle:"Seven Isles · Fort Lauderdale FL 33301",type:"Waterfront Estate",details:"6BR/6BA · 6,101 sqft · 100ft Intracoastal · Mediterranean estate · Home theater · 400-gal fish tank",purchasePrice:3940000,purchaseYear:2016,currentValue:9200000,debt:0,ownership:"100%",notes:"Comparable Seven Isles properties $8–9.78M. Strong Intracoastal demand."},
+    {id:"re2",name:"1015 N Rio Vista Blvd",subtitle:"Rio Vista · Fort Lauderdale FL",type:"New Construction",details:"Under construction · Cost-plus contract with Caprio Custom Construction · Active invoice oversight",purchasePrice:null,purchaseYear:2025,currentValue:11282000,debt:null,ownership:"100%",notes:"Active construction. Kristian managing invoice reconciliation against cost-plus contract."},
+    {id:"re3",name:"515 SE 9th Ave",subtitle:"Fort Lauderdale FL · 50% Stake",type:"Residential Lot",details:"50% equity · Joint purchase with 403 SW 8th St · Combined $1M for both stakes",purchasePrice:500000,purchaseYear:null,currentValue:630000,debt:0,ownership:"50%",notes:"Joint $1M purchase — $500K attributed to each property."},
+    {id:"re4",name:"403 SW 8th St",subtitle:"Fort Lauderdale FL · 50% Stake",type:"Residential Lot",details:"50% equity · Joint purchase with 515 SE 9th Ave · Combined $1M for both stakes",purchasePrice:500000,purchaseYear:null,currentValue:580000,debt:0,ownership:"50%",notes:"Joint $1M purchase — $500K attributed to each property."}
+  ],
+  vehicles:[
+    {id:"v1",name:"Bugatti Chiron Pur Sport",subtitle:"Purchased Late 2025",type:"Hypercar",details:"One of 60 worldwide · 8.0L W16 quad-turbo · 1,500 HP · Carbon fiber",purchasePrice:4000000,purchaseYear:2025,currentValue:5000000,debt:0,ownership:"100%",locked:true,notes:"LOCKED — Active direct offer at $5M. Stronger than any market indicator."},
+    {id:"v2",name:"Lamborghini Revuelto",subtitle:"Leased · Active",type:"Supercar — Leased",details:"V12 hybrid · 1,001 HP · $150K/year lease · No equity",purchasePrice:null,purchaseYear:null,currentValue:0,debt:0,ownership:"Leased",notes:"$150K/year lease. No equity. Excluded from net worth."},
+    {id:"v3",name:"Lamborghini Urus SE",subtitle:"Super SUV",type:"Luxury SUV",details:"V8 twin-turbo hybrid · 800 HP · High-performance spec",purchasePrice:null,purchaseYear:null,currentValue:325000,debt:0,ownership:"100%",notes:"Urus SE hybrid. Strong resale market."},
+    {id:"v4",name:"Corvette ZR1",subtitle:"Purchased Late 2025",type:"Supercar",details:"Flat-plane V8 · 1,064 HP · Mid-engine · Limited allocation",purchasePrice:null,purchaseYear:2025,currentValue:310000,debt:0,ownership:"100%",notes:"Limited allocation. Strong secondary market."},
+    {id:"v5",name:"Cadillac Escalade V",subtitle:"Performance Flagship",type:"Luxury SUV",details:"Supercharged 6.2L V8 · 682 HP · Magnetic Ride Control",purchasePrice:null,purchaseYear:null,currentValue:215000,debt:0,ownership:"100%",notes:"Escalade performance flagship. Strong retention."},
+    {id:"v6",name:"Chevrolet Tahoe High Country",subtitle:"Diesel Spec",type:"Full-Size SUV",details:"Duramax 3.0L diesel · Highest trim · Diesel premium over gas equiv.",purchasePrice:null,purchaseYear:null,currentValue:83000,debt:0,ownership:"100%",notes:"Diesel spec drives premium value."}
+  ],
+  watches:[
+    {id:"w1",name:"Rolex Submariner Date 41mm",subtitle:"Gold · 126618LB · Blue dial",type:"Luxury Watch",details:"18ct yellow gold · Blue ceramic bezel · Blue dial · Oyster bracelet",purchasePrice:51566,purchaseDate:"Feb 21 2026",currentValue:48500,debt:0,ownership:"100%",notes:"Gold Sub ref 126618LB. Purchased Feb 2026 at $51,566. Chrono24 current ~$48,500 — slight depreciation from new."},
+    {id:"w2",name:"Rolex GMT-Master II 40mm",subtitle:"Pepsi · White Gold · 116719BLRO",type:"Luxury Watch",details:"18ct white gold · Red/blue ceramic bezel · Oyster bracelet",purchasePrice:49340,purchaseDate:"Aug 29 2025",currentValue:52000,debt:0,ownership:"100%",notes:"White gold Pepsi GMT. Purchased Aug 2025 at $49,340. White gold Pepsi appreciated — Chrono24 ~$52K."},
+    {id:"w3",name:"Rolex Datejust 36mm",subtitle:"Rose Gold · Brown dial",type:"Luxury Watch",details:"Rose gold · Brown dial · Rose gold bracelet · 36mm",purchasePrice:26338,purchaseDate:"Jul 24 2007",currentValue:18500,debt:0,ownership:"100%",notes:"Purchased Jul 2007. Older reference — market value declined from original purchase price. Chrono24 ~$18,500."},
+    {id:"w4",name:"Rolex Datejust 31mm",subtitle:"Champagne · Two-Tone · 278343RBR",type:"Luxury Watch",details:"Two-tone · Champagne dial · Diamond-set bezel · 31mm",purchasePrice:17000,purchaseDate:"Jun 10 2024",currentValue:16500,debt:0,ownership:"100%",notes:"Purchased Jun 2024 at $17,000. Slight depreciation on secondary market. Chrono24 ~$16,500."},
+    {id:"w5",name:"Rolex Datejust 41mm",subtitle:"Black · Two-Tone · 126333",type:"Luxury Watch",details:"Oystersteel & yellow gold · Black dial · Jubilee bracelet · 41mm",purchasePrice:17589,purchaseDate:"Aug 15 2025",currentValue:17000,debt:0,ownership:"100%",notes:"Purchased Aug 2025 at $17,589. Stable market. Chrono24 ~$17,000."},
+    {id:"w6",name:"Rolex Datejust 41mm",subtitle:"Gold dial · 126301",type:"Luxury Watch",details:"Oystersteel & yellow gold · Gold dial · Jubilee bracelet · 41mm",purchasePrice:19937,purchaseDate:"Aug 7 2025",currentValue:19500,debt:0,ownership:"100%",notes:"Purchased Aug 2025 at $19,937. Slight depreciation. Chrono24 ~$19,500."},
+    {id:"w7",name:"Rolex Yacht-Master 37mm",subtitle:"Black dial · Gold/Steel · 126283RBR",type:"Luxury Watch",details:"Oystersteel & Everose gold · Black dial · Oysterflex · 37mm",purchasePrice:16150,purchaseDate:"Aug 7 2025",currentValue:16000,debt:0,ownership:"100%",notes:"Purchased Aug 2025 at $16,150. Stable. Chrono24 ~$16,000."},
+    {id:"w8",name:"TAG Heuer Carrera Chronograph",subtitle:"Green dial · 39mm",type:"Luxury Watch",details:"39mm · Green dial · White gold case · Chronograph",purchasePrice:8988,purchaseDate:"May 7 2026",currentValue:7500,debt:0,ownership:"100%",notes:"Purchased May 2026 at $8,988. TAG Heuer depreciates from retail on secondary market. ~$7,500."},
+    {id:"w9",name:"TAG Heuer Carrera 44mm",subtitle:"Black dial",type:"Luxury Watch",details:"44mm · Black dial · Steel · Automatic",purchasePrice:7800,purchaseDate:"Dec 26 2024",currentValue:5800,debt:0,ownership:"100%",notes:"Purchased Dec 2024 at $7,800. Secondary market ~$5,800."},
+    {id:"w10",name:"TAG Heuer Carrera Limited",subtitle:"Green dial · Limited Edition",type:"Luxury Watch",details:"Carrera Chronograph Limited Edition · Green dial",purchasePrice:6901,purchaseDate:"May 4 2025",currentValue:6200,debt:0,ownership:"100%",notes:"Limited edition. Purchased May 2025 at $6,901. ~$6,200 secondary market."},
+    {id:"w11",name:"TAG Heuer 500 Limited",subtitle:"Black dial · 43mm",type:"Luxury Watch",details:"43mm · Black dial · Steel · Limited Edition",purchasePrice:2000,purchaseDate:"Jun 7 2023",currentValue:1600,debt:0,ownership:"100%",notes:"Purchased Jun 2023 at $2,000. Secondary market ~$1,600."},
+    {id:"w12",name:"Breitling Superocean Heritage",subtitle:"Black dial · B01 44mm",type:"Luxury Watch",details:"44mm · Black dial · Steel · Chronograph B01",purchasePrice:8000,purchaseDate:"Feb 1 2024",currentValue:7200,debt:0,ownership:"100%",notes:"Purchased Feb 2024 at $8,000. Breitling holds value reasonably well. ~$7,200."},
+    {id:"w13",name:"Breitling Avenger Chronometer",subtitle:"Blue dial · Steel",type:"Luxury Watch",details:"Steel · Blue dial · Chronometer certified",purchasePrice:3118,purchaseDate:"May 26 2024",currentValue:2600,debt:0,ownership:"100%",notes:"Purchased May 2024 at $3,118. Secondary market ~$2,600."}
+  ],
+  jewelry:[
+    {id:"j1",name:"Hermès Birkin 25",subtitle:"Togo Calfskin · Gold hardware",type:"Luxury Bag",details:"Birkin 25 · Togo calfskin · Gold hardware · Ref KHA082TX",purchasePrice:13400,purchaseDate:"Oct 31 2025",currentValue:22000,debt:0,ownership:"100%",notes:"Purchased Oct 2025 at $13,400. Current Fashionphile/RealReal market value ~$22K. Birkin 25 Togo typically $18K–$28K."},
+    {id:"j2",name:"Hermès Kelly",subtitle:"May 2026",type:"Luxury Bag",details:"Hermès Kelly · Structured Birkin-style bag · Hermès Paris",purchasePrice:15844,purchaseDate:"May 11 2026",currentValue:19000,debt:0,ownership:"100%",notes:"Purchased May 2026 at $15,844. Kelly bags trade at or above retail on secondary market. Current estimate ~$19K."},
+    {id:"j3",name:"Diamond Coil Bracelet",subtitle:"18kt Yellow Gold · 4.47ct",type:"Fine Jewelry",details:"One-coil 18kt yellow gold · Pavé diamonds · 4.47 carat total · Ref 360701",purchasePrice:14466,purchaseDate:"Dec 23 2025",currentValue:14466,debt:0,ownership:"100%",notes:"Purchased Dec 2025 at $14,466. Update with current appraisal for accurate resale value."}
+  ],
+  art:[
+    {id:"a1",name:"San Miguel de Allende",subtitle:"Painting · 170 × 120 cm",type:"Painting",details:"170 × 120 cm · Large format · San Miguel de Allende artist",purchasePrice:13000,purchaseDate:"2017",currentValue:13000,debt:0,ownership:"100%",notes:"Purchase price $13,000."},
+    {id:"a2",name:"Arbol de una Propuesta de Amor",subtitle:"Alejandro Von Zeschau · 95 × 150 cm",type:"Painting",details:"95 × 150 cm · By Alejandro Von Zeschau",purchasePrice:null,purchaseDate:null,currentValue:null,debt:0,ownership:"100%",notes:"Purchase price TBD — add when available."},
+    {id:"a3",name:"El Arbol de las Palmas",subtitle:"David Gutierrez",type:"Painting",details:"By David Gutierrez · Olea y Arenas / FELA",purchasePrice:null,purchaseDate:null,currentValue:null,debt:0,ownership:"100%",notes:"Purchase price TBD — add when available."},
+    {id:"a4",name:"Shona Serpentine Stone",subtitle:"Sculpture · 18 inches",type:"Sculpture",details:"18-inch Shona serpentine stone sculpture",purchasePrice:400,purchaseDate:null,currentValue:400,debt:0,ownership:"100%",notes:"Purchase price $400."}
+  ]
+};
+
+const INV={
+  asOf:"June 16, 2026",
+  source:"Fratarcangeli Wealth Management · Wells Fargo Clearing Services",
+
+  // ── TOTAL ESTATE PORTFOLIO (all 4 accounts) ────────────────────────────────
+  totalPortfolioValue:8415089,
+  totalEquities:4140546,
+  totalFixedIncome:169647,
+  totalRealAssets:14453,
+  totalSpecialtyAssets:28991,
+  totalCashAlternatives:4061418,
+  annualizedReturn:8.38,
+  lifetimeAppreciation:931745,
+  inceptionDate:"Mar 8, 2021",
+  inceptionValue:1486669,
+  totalNetFlows:6000048,
+
+  // ── YEAR-BY-YEAR PERFORMANCE ───────────────────────────────────────────────
+  yearlyPerf:[
+    {year:"2026",return:4.38,gain:333290,start:2085124,end:8418462,contributions:8050048,withdrawals:-2050000},
+    {year:"2025",return:5.86,gain:97282,start:1987842,end:2085124,contributions:0,withdrawals:0},
+    {year:"2024",return:16.91,gain:271837,start:1716005,end:1987842,contributions:0,withdrawals:0},
+    {year:"2023",return:15.89,gain:221913,start:1494092,end:1716005,contributions:12096,withdrawals:-12096},
+    {year:"2022",return:-11.19,gain:-203360,start:1697452,end:1494092,contributions:0,withdrawals:0},
+    {year:"2021",return:14.99,gain:210782,start:1486669,end:1697452,contributions:1622817,withdrawals:-1622817},
+  ],
+
+  // ── ASSET ALLOCATION (full estate as of 6/16/26) ──────────────────────────
+  allocation:[
+    {label:"Equities",pct:49.2,value:4140546,color:"#C9A96E"},
+    {label:"Cash Alternatives",pct:48.3,value:4061418,color:"#4A86C8"},
+    {label:"Fixed Income",pct:2.0,value:169647,color:"#5A9E6F"},
+    {label:"Specialty Assets",pct:0.3,value:28991,color:"#C98BC9"},
+    {label:"Real Assets",pct:0.2,value:14453,color:"#E05C4A"}
+  ],
+
+  // ── EQUITY SECTORS (as of 6/16/26) ────────────────────────────────────────
+  sectors:[
+    {label:"Information Technology",pct:28.0,value:1171494},
+    {label:"Industrials",pct:25.86,value:1082127},
+    {label:"Financials",pct:10.27,value:429670},
+    {label:"Health Care",pct:9.39,value:392717},
+    {label:"Materials",pct:5.74,value:240022},
+    {label:"Consumer Discretionary",pct:5.97,value:249662},
+    {label:"Consumer Staples",pct:4.49,value:187994},
+    {label:"Utilities",pct:3.39,value:141801},
+    {label:"Communication Services",pct:3.2,value:134009},
+    {label:"Real Estate",pct:2.34,value:98067},
+    {label:"Energy",pct:0.76,value:31805},
+    {label:"Unclassified",pct:0.6,value:25132},
+  ],
+
+  // ── ESTIMATED ANNUAL INCOME ───────────────────────────────────────────────
+  estimatedAnnualIncome:19376,
+  estimatedAnnualDividends:17049,
+
+  // ── INDIVIDUAL ACCOUNTS (as of 6/16/26) ───────────────────────────────────
+  accounts:[
+    {
+      id:"troy_main",name:"Eakins Troy",accountId:"XXXX6437",type:"Brokerage Account",
+      totalBalance:3993218,
+      ytdReturn:0.98,ytdGain:43218,
+      inceptionDate:"Jan 5, 2026",inceptionValue:6000000,
+      netInvestedCapital:3950000,
+      withdrawals:2050000,
+      model:["Primary brokerage account","Inception Jan 5, 2026","$6M starting value · $2.05M withdrawn YTD"],
+      notes:"Began at $6M on Jan 5, 2026. $2.05M withdrawn YTD. Net invested capital $3.95M. Gain $43,218 (+0.98% annualized)."
+    },
+    {
+      id:"tr_pim",name:"Eakins TR PIM",accountId:"XXXX6778",type:"Trust · PIM Managed",
+      totalBalance:2195389,
+      ytdReturn:8.93,ytdGain:146799,
+      inceptionDate:"Jan 30, 2026",inceptionValue:300000,
+      additions:1750000,netInvestedCapital:2050000,
+      model:["40% — Strategic Growth Portfolio","40% — High Quality Dividend Portfolio","10% — S&P 500","10% — QQQ"],
+      notes:"Inception Jan 30, 2026. $300K start + $1.75M added. Net invested $2.05M. Gain $146,799 (+8.93% annualized) — strongest performer."
+    },
+    {
+      id:"ira_dividend",name:"Troy PIM IRA — High Quality Dividend",accountId:"XXXX1521",type:"IRA · Managed",
+      totalBalance:2056576,
+      ytdReturn:7.89,ytdGain:141125,
+      inceptionDate:"Mar 18, 2021",inceptionValue:1338000,
+      lifetimeGain:719562,lifetimeReturn:9.64,
+      model:["60% — Strategic Growth Portfolio","40% — High Quality Dividend Portfolio"],
+      notes:"Inception Mar 2021 at $1.338M. Lifetime appreciation $719,562. Annualized 9.64% since inception."
+    },
+    {
+      id:"ira_fixed",name:"Troy IRA — Fixed Income",accountId:"XXXX3377",type:"IRA · Fixed Income",
+      totalBalance:169907,
+      ytdReturn:1.28,ytdGain:2148,
+      inceptionDate:"Mar 8, 2021",inceptionValue:1486669,
+      lifetimeGain:22166,lifetimeReturn:2.66,
+      model:["Fixed Income strategy","Capital preservation focus"],
+      notes:"Inception Mar 2021 at $1.486M. Majority distributed over time. Current balance $169,907. Annualized 2.66% since inception."
+    }
+  ]
+};
+
+const CATS=[
+  {key:"realEstate",label:"Real Estate",icon:"🏠"},
+  {key:"vehicles",label:"Vehicles",icon:"🚗"},
+  {key:"watches",label:"Watches",icon:"⌚"},
+  {key:"jewelry",label:"Jewelry & Bags",icon:"💎"},
+  {key:"art",label:"Art & Sculpture",icon:"🎨"}
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentUser=null,assetData=null,locked={};
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener("load",()=>{
+  setTimeout(()=>{
+    document.getElementById("loader").classList.add("hidden");
+    const sess=localStorage.getItem(SK_SESSION),gateOk=sessionStorage.getItem("gate_ok");
+    if(sess){try{currentUser=JSON.parse(sess);if(gateOk)showApp();else showScreen("gate");}catch(e){showScreen("gate");}}
+    else showScreen("gate");
+  },700);
+});
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter")return;
+  if(document.getElementById("screen-gate").classList.contains("active"))checkGate();
+  if(document.getElementById("screen-auth").classList.contains("active")){
+    const t=document.querySelector(".auth-tab.active").textContent;
+    if(t==="Sign In")doLogin();else doRegister();
+  }
+});
+function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("screen-"+id).classList.add("active");}
+
+// ── GATE ──────────────────────────────────────────────────────────────────────
+function checkGate(){
+  const v=document.getElementById("gate-input").value.trim();
+  if(v===GATE_PW){
+    sessionStorage.setItem("gate_ok","1");
+    const s=localStorage.getItem(SK_SESSION);
+    if(s){try{currentUser=JSON.parse(s);showApp();}catch(e){showScreen("auth");}}
+    else showScreen("auth");
+  }else{document.getElementById("gate-error").textContent="Incorrect access code.";document.getElementById("gate-input").value="";}
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function switchAuthTab(tab){
+  document.querySelectorAll(".auth-tab").forEach((t,i)=>t.classList.toggle("active",(i===0&&tab==="login")||(i===1&&tab==="register")));
+  document.getElementById("auth-form-login").style.display=tab==="login"?"flex":"none";
+  document.getElementById("auth-form-register").style.display=tab==="register"?"flex":"none";
+}
+function getUsers(){try{return JSON.parse(localStorage.getItem(SK_USERS)||"[]");}catch(e){return[];}}
+function hash(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return h.toString(36);}
+function showMsg(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className="auth-msg "+type;}
+function doRegister(){
+  const name=document.getElementById("reg-name").value.trim();
+  const email=document.getElementById("reg-email").value.trim().toLowerCase();
+  const pass=document.getElementById("reg-pass").value;
+  const pass2=document.getElementById("reg-pass2").value;
+  if(!name||!email||!pass){showMsg("reg-msg","All fields required.","error");return;}
+  if(pass.length<8){showMsg("reg-msg","Min 8 characters.","error");return;}
+  if(pass!==pass2){showMsg("reg-msg","Passwords don't match.","error");return;}
+  const users=getUsers();
+  if(users.find(u=>u.email===email)){showMsg("reg-msg","Account already exists.","error");return;}
+  const user={name,email,passHash:hash(pass)};
+  users.push(user);localStorage.setItem(SK_USERS,JSON.stringify(users));
+  currentUser={name,email};localStorage.setItem(SK_SESSION,JSON.stringify(currentUser));
+  showMsg("reg-msg","Account created!","success");setTimeout(showApp,600);
+}
+function doLogin(){
+  const email=document.getElementById("login-email").value.trim().toLowerCase();
+  const pass=document.getElementById("login-pass").value;
+  if(!email||!pass){showMsg("login-msg","Email and password required.","error");return;}
+  const user=getUsers().find(u=>u.email===email&&u.passHash===hash(pass));
+  if(!user){showMsg("login-msg","Invalid email or password.","error");return;}
+  currentUser={name:user.name,email:user.email};localStorage.setItem(SK_SESSION,JSON.stringify(currentUser));
+  showMsg("login-msg","Welcome back!","success");setTimeout(showApp,600);
+}
+function doSignOut(){currentUser=null;localStorage.removeItem(SK_SESSION);sessionStorage.removeItem("gate_ok");showScreen("gate");document.getElementById("gate-input").value="";}
+
+// ── API KEY ───────────────────────────────────────────────────────────────────
+function openApiModal(){document.getElementById("api-modal").classList.add("open");}
+function closeApiModal(){document.getElementById("api-modal").classList.remove("open");}
+function saveApiKey(){
+  const k=document.getElementById("api-key-input").value.trim();
+  if(!k.startsWith("sk-")){alert("Invalid key format.");return;}
+  localStorage.setItem(SK_APIKEY,k);closeApiModal();
+  alert("API key saved. You can now use Live Market Refresh.");
+}
+function getApiKey(){return localStorage.getItem(SK_APIKEY)||"";}
+
+// ── APP ───────────────────────────────────────────────────────────────────────
+function showApp(){
+  assetData=loadData();locked=loadLocked();
+  document.getElementById("user-pill").textContent=currentUser.name;
+  document.getElementById("topbar-date").textContent=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  renderAll();showScreen("app");
+}
+function loadData(){try{const s=localStorage.getItem(SK_DATA);if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT));}
+function saveData(){localStorage.setItem(SK_DATA,JSON.stringify(assetData));localStorage.setItem(SK_UPDATE,new Date().toISOString());updateTimestamp();}
+function loadLocked(){try{return JSON.parse(localStorage.getItem(SK_LOCKED)||"{}");}catch(e){return {};}}
+function saveLocked(){localStorage.setItem(SK_LOCKED,JSON.stringify(locked));}
+function isLocked(id){return !!(locked[id]||(findAsset(id)||{}).locked);}
+function findAsset(id){for(const cat of Object.keys(assetData)){const a=(assetData[cat]||[]).find(x=>x.id===id);if(a)return a;}return null;}
+function updateTimestamp(){const ts=localStorage.getItem(SK_UPDATE);const s=ts?new Date(ts).toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"Never";document.getElementById("last-updated").textContent="Updated: "+s;}
+function renderAll(){updateTimestamp();renderTotalTab();renderRETab();renderVehTab();renderWatchTab();renderJewTab();renderArtTab();renderInvTab();}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function fmt(n,short=false){
+  if(n==null||isNaN(n))return"—";
+  if(short&&Math.abs(n)>=1e6)return"$"+(n/1e6).toFixed(2)+"M";
+  if(short&&Math.abs(n)>=1e3)return"$"+(n/1e3).toFixed(0)+"K";
+  return"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:0});
+}
+function catTotal(cat){return(assetData[cat]||[]).reduce((s,a)=>s+(a.ownership==="Leased"?0:(a.currentValue||0)),0);}
+function allTotals(){
+  const re=catTotal("realEstate"),veh=catTotal("vehicles"),wat=catTotal("watches"),jew=catTotal("jewelry"),art=catTotal("art"),inv=INV.totalPortfolioValue;
+  const total=re+veh+wat+jew+art+inv;return{re,veh,wat,jew,art,inv,total,netWorth:total};
+}
+
+function renderCard(a,cat){
+  const lk=isLocked(a.id);
+  const gp=a.purchasePrice&&a.currentValue?((a.currentValue-a.purchasePrice)/a.purchasePrice*100).toFixed(1):null;
+  const ga=a.purchasePrice&&a.currentValue?a.currentValue-a.purchasePrice:null;
+  let bc="badge-neutral",bt=a.ownership||"—";
+  if(lk){bc="badge-locked";bt="🔒 Offer locked";}
+  else if(a.ownership==="Leased"){bc="badge-leased";bt="Leased";}
+  else if(gp!==null){bc=gp>=0?"badge-profit":"badge-loss";bt=(gp>=0?"▲":"▼")+Math.abs(gp)+"%";}
+  const rows=[];
+  if(a.currentValue!=null)rows.push({k:"Market Value",v:fmt(a.currentValue),cls:a.currentValue>(a.purchasePrice||0)?"gold":""});
+  if(a.purchasePrice)rows.push({k:"Purchase Price",v:fmt(a.purchasePrice),cls:""});
+  if(ga!==null)rows.push({k:"Gain / Loss",v:(ga>=0?"+":"")+fmt(ga),cls:ga>=0?"green":"red"});
+  if(a.purchaseDate)rows.push({k:"Acquired",v:a.purchaseDate,cls:""});
+  if(a.purchaseYear&&!a.purchaseDate)rows.push({k:"Year Acquired",v:String(a.purchaseYear),cls:""});
+  if(a.ownership)rows.push({k:"Ownership",v:a.ownership,cls:a.ownership==="Leased"?"blue":""});
+  const lockLabel=lk?"🔓 Remove lock":"🔒 Lock to offer price";
+  return`<div class="asset-card${lk?" locked":""}" id="card-${a.id}">
+    <div class="asset-card-top">
+      <div><div class="asset-name">${a.name}</div><div class="asset-sub">${a.subtitle||a.type||""}</div></div>
+      <div class="asset-badge ${bc}">${bt}</div>
+    </div>
+    <div class="asset-divider"></div>
+    ${rows.map(r=>`<div class="asset-row"><div class="asset-key">${r.k}</div><div class="asset-val ${r.cls}">${r.v}</div></div>`).join("")}
+    ${a.details?`<div class="asset-note">${a.details}</div>`:""}
+    <div style="display:flex;gap:6px;margin-top:9px">
+      ${a.ownership!=="Leased"?`<button class="lock-btn${lk?" active":""}" onclick="toggleLock('${a.id}',event)">${lockLabel}</button>`:""}
+      ${a.ownership!=="Leased"?`<button class="lock-btn" onclick="editVal('${cat}','${a.id}',event)" style="flex:0.5">Edit</button>`:""}
+    </div>
+  </div>`;
+}
+
+function editVal(cat,id,e){
+  e&&e.stopPropagation();
+  if(isLocked(id)){alert("This asset is locked to a direct offer price. Remove the lock first to edit.");return;}
+  const idx=(assetData[cat]||[]).findIndex(a=>a.id===id);if(idx===-1)return;
+  const a=assetData[cat][idx];
+  const nv=prompt(`Update market value:\n${a.name}\n\nCurrent: ${fmt(a.currentValue)}\n\nEnter new value (numbers only):`);
+  if(nv===null)return;
+  const p=parseFloat(nv.replace(/[^0-9.]/g,""));
+  if(isNaN(p)){alert("Invalid value.");return;}
+  assetData[cat][idx].currentValue=p;saveData();renderAll();
+}
+
+function toggleLock(id,e){
+  e&&e.stopPropagation();
+  const a=findAsset(id);if(!a)return;
+  if(a.locked){alert("This asset has a built-in offer lock. It cannot be removed here — update the purchase price in the source data.");return;}
+  if(locked[id]){delete locked[id];}else{const cv=prompt(`Lock ${a.name} to an offer price:\n\nEnter the locked value:`);if(!cv)return;const p=parseFloat(cv.replace(/[^0-9.]/g,""));if(isNaN(p))return;locked[id]=p;const cat=Object.keys(assetData).find(k=>(assetData[k]||[]).some(x=>x.id===id));if(cat){const idx=(assetData[cat]||[]).findIndex(x=>x.id===id);if(idx>-1)assetData[cat][idx].currentValue=p;}}
+  saveLocked();saveData();renderAll();
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(tab){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+  const btn=document.getElementById("tabbtn-"+tab);if(btn)btn.classList.add("active");
+  const content=document.getElementById("tab-"+tab);if(content)content.classList.add("active");
+}
+
+// ── LIVE REFRESH ──────────────────────────────────────────────────────────────
+function refreshBar(containerId,cat,label){
+  const el=document.getElementById(containerId);if(!el)return;
+  el.innerHTML=`
+    <button class="refresh-btn" id="rbtn-${cat}" onclick="doRefresh('${cat}','${containerId}')">✦ Live Market Refresh</button>
+    <button class="api-key-btn" onclick="openApiModal()">API Key</button>
+    <div class="refresh-status" id="rstatus-${cat}"></div>`;
+}
+
+async function doRefresh(cat,barId){
+  const key=getApiKey();
+  if(!key){alert("Add your Anthropic API key first — click the API Key button.");return;}
+  const btn=document.getElementById("rbtn-"+cat);
+  const status=document.getElementById("rstatus-"+cat);
+  btn.textContent="Researching...";btn.disabled=true;btn.classList.add("loading");
+  status.textContent="Searching current listings...";
+
+  const assets=(assetData[cat]||[]).filter(a=>a.ownership!=="Leased"&&!isLocked(a.id)&&a.currentValue!==null);
+  if(!assets.length){btn.textContent="✦ Live Market Refresh";btn.disabled=false;btn.classList.remove("loading");status.textContent="No unlocked assets to refresh.";return;}
+
+  const assetList=assets.map(a=>`- ${a.name} (${a.subtitle||a.type})`).join("\n");
+  const prompt=`You are a luxury asset appraiser. Research current market values for these assets and return ONLY a JSON array, no markdown, no explanation:\n\n${assetList}\n\nFor each asset return:\n[\n  {"id":"${assets[0].id}","name":"...","value":NUMBER,"confidence":"high|medium|estimate","source":"brief source description"}\n]\n\nUse Chrono24 for watches, Bring a Trailer/Cars&Bids for vehicles, Redfin/Zillow for real estate, Fashionphile/The RealReal for bags. Return only the JSON array.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:prompt}]})
+    });
+    const data=await res.json();
+    const text=data.content.filter(b=>b.type==="text").map(b=>b.text).join("").replace(/```json|```/g,"").trim();
+    const results=JSON.parse(text);
+    let updated=0;
+    results.forEach(r=>{
+      const catData=assetData[cat]||[];
+      const idx=catData.findIndex(a=>a.id===r.id||a.name===r.name);
+      if(idx>-1&&r.value&&!isLocked(catData[idx].id)){
+        assetData[cat][idx].currentValue=r.value;
+        assetData[cat][idx].lastResearched=new Date().toLocaleDateString();
+        assetData[cat][idx].confidence=r.confidence;
+        assetData[cat][idx].source=r.source;
+        updated++;
+      }
+    });
+    saveData();renderAll();
+    status.textContent=`✓ Updated ${updated} asset${updated!==1?"s":""} · ${new Date().toLocaleTimeString()}`;
+  }catch(err){
+    status.textContent="Research failed — check API key or try again.";
+    console.error(err);
+  }
+  btn.textContent="✦ Live Market Refresh";btn.disabled=false;btn.classList.remove("loading");
+}
+
+// ── RENDER TABS ───────────────────────────────────────────────────────────────
+function renderTotalTab(){
+  const t=allTotals();
+  document.getElementById("total-summary").innerHTML=[
+    {label:"Total Net Worth",val:fmt(t.netWorth,true),sub:"All assets · Excl. SAPTFC & TBD items",cls:"highlight"},
+    {label:"Real Estate",val:fmt(t.re,true),sub:"4 properties · Fort Lauderdale",cls:""},
+    {label:"Vehicles",val:fmt(t.veh,true),sub:"5 owned · 1 leased excl.",cls:""},
+    {label:"Watches",val:fmt(t.wat,true),sub:"13 timepieces",cls:""},
+    {label:"Jewelry & Bags",val:fmt(t.jew,true),sub:"3 pieces",cls:""},
+    {label:"Art & Sculpture",val:fmt(t.art,true),sub:"4 pieces · 2 TBD",cls:"purple-card"},
+    {label:"Investments",val:fmt(t.inv,true),sub:"4 accounts · Fratarcangeli WM",cls:"green-card"},
+  ].map(c=>`<div class="sum-card ${c.cls}"><div class="sum-label">${c.label}</div><div class="sum-val">${c.val}</div><div class="sum-sub">${c.sub}</div></div>`).join("");
+
+  let html="";
+  CATS.forEach(sec=>{
+    const assets=assetData[sec.key]||[];
+    html+=`<div class="section"><div class="section-head"><div class="section-icon">${sec.icon}</div><div class="section-title">${sec.label}</div><div class="section-count">${fmt(catTotal(sec.key),true)}</div></div><div class="asset-grid">${assets.map(a=>renderCard(a,sec.key)).join("")}</div></div>`;
+  });
+  document.getElementById("total-breakdown").innerHTML=html;
+}
+
+function renderRETab(){
+  refreshBar("re-refresh","realEstate","Real Estate");
+  const t=catTotal("realEstate"),pp=assetData.realEstate.reduce((s,a)=>s+(a.purchasePrice||0),0);
+  document.getElementById("re-total-lbl").textContent="Total: "+fmt(t,true);
+  document.getElementById("re-summary").innerHTML=[
+    {l:"Portfolio Value",v:fmt(t,true),s:"4 Fort Lauderdale properties",c:"highlight"},
+    {l:"Total Cost Basis",v:fmt(pp,true),s:"Known purchase prices",c:""},
+    {l:"Unrealized Gain",v:fmt(t-pp,true),s:"From known basis",c:"green-card"},
+    {l:"Outstanding Debt",v:"$0",s:"All free & clear",c:""}
+  ].map(x=>`<div class="sum-card ${x.c}"><div class="sum-label">${x.l}</div><div class="sum-val">${x.v}</div><div class="sum-sub">${x.s}</div></div>`).join("");
+  document.getElementById("re-cards").innerHTML=assetData.realEstate.map(a=>renderCard(a,"realEstate")).join("");
+}
+
+function renderVehTab(){
+  refreshBar("veh-refresh","vehicles","Vehicles");
+  const owned=assetData.vehicles.filter(a=>a.ownership!=="Leased");
+  const t=owned.reduce((s,a)=>s+(a.currentValue||0),0);
+  document.getElementById("veh-total-lbl").textContent="Owned: "+fmt(t,true);
+  document.getElementById("veh-summary").innerHTML=[
+    {l:"Owned Fleet Value",v:fmt(t,true),s:owned.length+" owned vehicles",c:"highlight"},
+    {l:"Leased",v:"1",s:"Excluded from net worth",c:"blue-card"},
+    {l:"Total Fleet",v:String(assetData.vehicles.length),s:"Including leased",c:""},
+    {l:"Bugatti Value",v:"$5.00M",s:"Direct offer locked",c:""}
+  ].map(x=>`<div class="sum-card ${x.c}"><div class="sum-label">${x.l}</div><div class="sum-val">${x.v}</div><div class="sum-sub">${x.s}</div></div>`).join("");
+  document.getElementById("veh-cards").innerHTML=assetData.vehicles.map(a=>renderCard(a,"vehicles")).join("");
+}
+
+function renderWatchTab(){
+  refreshBar("watch-refresh","watches","Watches");
+  const t=catTotal("watches");
+  const pp=assetData.watches.reduce((s,a)=>s+(a.purchasePrice||0),0);
+  const top=assetData.watches.reduce((b,a)=>(!b||a.currentValue>b.currentValue)?a:b,null);
+  document.getElementById("watch-total-lbl").textContent="Total: "+fmt(t,true);
+  document.getElementById("watch-summary").innerHTML=[
+    {l:"Collection Value",v:fmt(t,true),s:"13 timepieces",c:"highlight"},
+    {l:"Total Cost Basis",v:fmt(pp,true),s:"Purchase prices paid",c:""},
+    {l:"Gain / Loss",v:fmt(t-pp,true),s:"Market vs cost",c:"green-card"},
+    {l:"Top Piece",v:top?fmt(top.currentValue,true):"—",s:top?top.name.split(" ").slice(0,3).join(" "):"—",c:""}
+  ].map(x=>`<div class="sum-card ${x.c}"><div class="sum-label">${x.l}</div><div class="sum-val">${x.v}</div><div class="sum-sub">${x.s}</div></div>`).join("");
+  document.getElementById("watch-cards").innerHTML=assetData.watches.map(a=>renderCard(a,"watches")).join("");
+}
+
+function renderJewTab(){
+  refreshBar("jew-refresh","jewelry","Jewelry");
+  const t=catTotal("jewelry"),pp=assetData.jewelry.reduce((s,a)=>s+(a.purchasePrice||0),0);
+  document.getElementById("jew-total-lbl").textContent="Total: "+fmt(t,true);
+  document.getElementById("jew-summary").innerHTML=[
+    {l:"Valued Holdings",v:fmt(t,true),s:"3 pieces",c:"highlight"},
+    {l:"Total Cost Basis",v:fmt(pp,true),s:"Purchase prices paid",c:""},
+    {l:"Gain / Loss",v:fmt(t-pp,true),s:"Market vs cost",c:"green-card"},
+    {l:"Hermès Bags",v:"2",s:"Birkin 25 + Kelly",c:""}
+  ].map(x=>`<div class="sum-card ${x.c}"><div class="sum-label">${x.l}</div><div class="sum-val">${x.v}</div><div class="sum-sub">${x.s}</div></div>`).join("");
+  document.getElementById("jew-cards").innerHTML=assetData.jewelry.map(a=>renderCard(a,"jewelry")).join("");
+}
+
+function renderArtTab(){
+  refreshBar("art-refresh","art","Art");
+  const t=catTotal("art"),pp=assetData.art.reduce((s,a)=>s+(a.purchasePrice||0),0);
+  const valued=assetData.art.filter(a=>a.currentValue!=null).length;
+  document.getElementById("art-total-lbl").textContent="Valued: "+fmt(t,true);
+  document.getElementById("art-summary").innerHTML=[
+    {l:"Valued Collection",v:fmt(t,true),s:`${valued} of ${assetData.art.length} pieces valued`,c:"highlight"},
+    {l:"Total Cost Basis",v:fmt(pp,true),s:"Known purchase prices",c:""},
+    {l:"Pieces TBD",v:String(assetData.art.length-valued),s:"Purchase price pending",c:"purple-card"},
+    {l:"Sculpture",v:"1",s:"Shona Serpentine Stone",c:""}
+  ].map(x=>`<div class="sum-card ${x.c}"><div class="sum-label">${x.l}</div><div class="sum-val">${x.v}</div><div class="sum-sub">${x.s}</div></div>`).join("");
+  document.getElementById("art-cards").innerHTML=assetData.art.map(a=>renderCard(a,"art")).join("");
+}
+
+function renderInvTab(){
+  const d=INV;
+
+  // Account cards
+  const accts=d.accounts.map(ac=>{
+    const rows=[];
+    if(ac.totalBalance!=null)rows.push({l:"Market Value (4/14/26)",v:fmt(ac.totalBalance),c:"gold"});
+    if(ac.ytdReturn!=null)rows.push({l:"YTD Return",v:(ac.ytdReturn>=0?"+":"")+ac.ytdReturn+"%",c:ac.ytdReturn>=0?"green":"red"});
+    if(ac.ytdGain!=null)rows.push({l:"YTD Gain",v:(ac.ytdGain>=0?"+":"")+fmt(ac.ytdGain),c:ac.ytdGain>=0?"green":"red"});
+    if(ac.lifetimeGain!=null)rows.push({l:"Lifetime Gain",v:"+"+fmt(ac.lifetimeGain),c:"green"});
+    if(ac.lifetimeReturn!=null)rows.push({l:"Annualized (inception)",v:"+"+ac.lifetimeReturn+"%",c:"green"});
+    if(ac.netInvestedCapital!=null)rows.push({l:"Net Invested Capital",v:fmt(ac.netInvestedCapital),c:""});
+    if(ac.additions!=null)rows.push({l:"Contributions",v:"+"+fmt(ac.additions),c:""});
+    if(ac.withdrawals!=null)rows.push({l:"Withdrawals",v:fmt(ac.withdrawals),c:""});
+    if(ac.inceptionDate)rows.push({l:"Inception Date",v:ac.inceptionDate,c:""});
+    return`<div class="account-card">
+      <div class="account-header">
+        <div><div class="account-name">${ac.name}</div><div class="account-id">${ac.accountId} · ${ac.type}</div></div>
+        <div class="account-val">${fmt(ac.totalBalance,true)}</div>
+      </div>
+      <div class="account-rows">${rows.map(r=>`<div class="account-row-item"><div class="account-row-label">${r.l}</div><div class="account-row-val ${r.c}">${r.v}</div></div>`).join("")}</div>
+      <div class="model-row"><div class="model-label">Investment Model</div><div class="model-items">${ac.model.map(m=>`<div class="model-chip">${m}</div>`).join("")}</div></div>
+      ${ac.notes?`<div class="asset-note">${ac.notes}</div>`:""}
+    </div>`;
+  }).join("");
+
+  // Year by year performance table
+  const perfRows=d.yearlyPerf.map(y=>{
+    const c=y.return>=0?"green":"red";
+    return`<div class="asset-row">
+      <div class="asset-key">${y.year}</div>
+      <div class="asset-val ${c}" style="font-style:italic">${y.return>=0?"+":""}${y.return}%</div>
+      <div class="asset-val ${c}">${y.gain>=0?"+":""}${fmt(y.gain)}</div>
+    </div>`;
+  }).join("");
+
+  // Sector breakdown
+  const topSectors=d.sectors.slice(0,6);
+  const maxSector=Math.max(...d.sectors.map(s=>s.value));
+  const sectorBars=topSectors.map(s=>`
+    <div class="benchmark-row">
+      <div class="benchmark-labels"><span class="benchmark-name">${s.label}</span><span class="benchmark-pct" style="color:var(--gold)">${s.pct}%</span></div>
+      <div class="benchmark-bar-bg"><div class="benchmark-bar-fill" style="width:${(s.value/maxSector*100).toFixed(1)}%;background:var(--gold)"></div></div>
+    </div>`).join("");
+
+  document.getElementById("inv-dashboard").innerHTML=`
+    <!-- HERO -->
+    <div class="inv-hero">
+      <div class="inv-hero-top">
+        <div>
+          <div class="inv-hero-label">Eakins Estate — Total Portfolio</div>
+          <div class="inv-hero-val">${fmt(d.totalPortfolioValue)}</div>
+          <div class="inv-hero-sub">As of ${d.asOf} · ${d.source}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="inv-hero-label">Annualized Return (Since Inception)</div>
+          <div class="inv-return positive">+${d.annualizedReturn}%</div>
+          <div class="inv-hero-sub">Since ${d.inceptionDate}</div>
+        </div>
+      </div>
+      <div class="inv-metrics">
+        <div class="inv-metric"><div class="inv-metric-label">Total Equities</div><div class="inv-metric-val" style="color:var(--gold)">${fmt(d.totalEquities,true)}</div><div class="inv-metric-sub">45.6% of portfolio</div></div>
+        <div class="inv-metric"><div class="inv-metric-label">Cash Alternatives</div><div class="inv-metric-val" style="color:var(--blue)">${fmt(d.totalCashAlternatives,true)}</div><div class="inv-metric-sub">52.0% of portfolio</div></div>
+        <div class="inv-metric"><div class="inv-metric-label">Lifetime Appreciation</div><div class="inv-metric-val" style="color:var(--green)">+${fmt(d.lifetimeAppreciation)}</div><div class="inv-metric-sub">Since ${d.inceptionDate}</div></div>
+        <div class="inv-metric"><div class="inv-metric-label">Est. Annual Income</div><div class="inv-metric-val" style="color:var(--gold)">${fmt(d.estimatedAnnualIncome)}</div><div class="inv-metric-sub">$${fmt(d.estimatedAnnualDividends).replace("$","")} dividends</div></div>
+      </div>
+    </div>
+
+    <!-- ALLOCATION + YEAR PERFORMANCE side by side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="alloc-section" style="margin:0">
+        <div class="alloc-title">Asset Allocation</div>
+        <div class="alloc-grid">${d.allocation.map(a=>`<div class="alloc-item"><div class="alloc-dot" style="background:${a.color}"></div><div class="alloc-label">${a.label}</div><div class="alloc-pct">${a.pct}%</div></div>`).join("")}</div>
+      </div>
+      <div class="benchmark-section" style="margin:0">
+        <div class="benchmark-title">Year-by-Year Returns</div>
+        <div style="margin-bottom:6px;display:flex;justify-content:space-between">
+          <span style="font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase">Year</span>
+          <span style="font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase">Return · Gain</span>
+        </div>
+        ${perfRows}
+      </div>
+    </div>
+
+    <!-- EQUITY SECTORS -->
+    <div class="benchmark-section">
+      <div class="benchmark-title">Equity Sector Weightings (Top 6 of 12)</div>
+      ${sectorBars}
+    </div>
+
+    <!-- ACCOUNT DETAILS -->
+    <div class="section-head" style="margin-bottom:12px;margin-top:4px">
+      <div class="section-icon">🏦</div>
+      <div class="section-title">Account Details — 4 Accounts</div>
+      <div class="section-count">${fmt(d.totalPortfolioValue,true)} total</div>
+    </div>
+    ${accts}`;
+}
+</script>
+</body>
+</html>
